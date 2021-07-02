@@ -1,5 +1,5 @@
 # 42 Test
 ## Requirements
-You must have node and npm installed.
+You must docker and docker-compose installed.
 ## To run
-Just run 'npm install' and when it´s done do 'node index.js'
+Just run 'docker-compose up' and the server should start running at port 8080.
