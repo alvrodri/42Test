@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Events</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container" style="margin-top: 15px;">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/events/<%= event.campus_ids[0] %>">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= event.name.length > 25 ? event.name.substr(0, 25) + "..." : event.name %></li>
+          </ol>
+        </nav>
+        <div class="row">
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-body">
+                  <h3 class="card-title"><%= event.name %></h3>
+                  <p class="card-text"><%= event.description %></p>
+                  <p class="card-text">
+                    <h5>Members:</h5>
+                      <% users.forEach(user => { %>
+                        <a href="/users/<%= user.user.id %>"><%= user.user.login %></a>
+                      <% }); %>
+                    </ul>
+                  </p>
+                  <div id="sessions">
+                  <div class="spinner-border" id="loading" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  <table class="table table-striped table-bordered" style="margin-top: 15px;" hidden>
+                      <thead class="table-light">
+                          <tr>
+                              <th>Name</th>
+                              <th>Message</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tbody">
+                      </tbody>
+                      <caption>Last feedbacks...</caption>
+                  </table>
+                  </div>
+                  <p class="card-text">
+                    <small class="text-muted">
+                        People: <%= event.nbr_subscribers %>/<%= event.max_people == null ? "∞" : event.max_people %>
+                    </small>
+                  </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(() => {
+      setTimeout(() => {
+        fetch("/api?url=events/<%= event.id %>/feedbacks").then(res=> {
+         res.json().then(res => {
+           if (!res[0]) {
+            $("#loading").html("There are not feedbacks.");
+            $("#loading").removeClass("spinner-border");
+           } else {
+           $("#loading").remove();
+           $(".table").removeAttr("hidden");
+           for (user of res) {
+             let tr = document.createElement("tr");
+             let td2 = document.createElement("td");
+             let link = document.createTextNode(user.user.login);
+             let a = document.createElement("a");
+
+             a.appendChild(link);
+             a.title = user.user.login;
+             a.href = "/users/" + user.user.id;
+             td2.innerHTML = user.comment;
+             tr.appendChild(a);
+             tr.appendChild(td2);
+              $("#tbody").append(tr);
+           }
+          }
+         });
+      });
+      }, 500);
+    });
+  </script>
+</html>
