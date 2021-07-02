@@ -1,5 +1,6 @@
 # 42 Test
 ## Requirements
-You must have node and npm installed.
+You must docker and docker-compose installed.
 ## To run
-Just run 'npm install' and when it´s done do 'node index.js'
+Create the .env file from the envexample file and add your UID and SECRET
+Run docker-compose up and it should start listening on port 8080
