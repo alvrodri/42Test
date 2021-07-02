@@ -3,6 +3,7 @@ services:
   app:
     build: .
     volumes:
+      - /app/node_modules
       - .:/app
     ports:
       - 8080:8080
